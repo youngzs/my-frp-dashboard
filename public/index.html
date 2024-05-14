@@ -1,1 +1,33 @@
-index file.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRPS Dashboard</title>
+</head>
+<body>
+    <h1>FRPS Dashboard</h1>
+    <button id="statusBtn">Get Status</button>
+    <pre id="status"></pre>
+
+    <script>
+        async function getFrpServerIp() {
+            const response = await fetch('/api/get-frp-server-ip');
+            const data = await response.json();
+            return data.frpServerIp;
+        }
+
+        document.getElementById('statusBtn').addEventListener('click', async () => {
+            const frpServerIp = await getFrpServerIp();
+            const response = await fetch(`http://${frpServerIp}:7500/api/status`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Basic ' + btoa('admin:admin') // Replace with your actual username and password
+                }
+            });
+            const data = await response.json();
+            document.getElementById('status').textContent = JSON.stringify(data, null, 2);
+        });
+    </script>
+</body>
+</html>
